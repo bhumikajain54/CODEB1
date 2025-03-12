@@ -330,7 +330,7 @@ public class UserService {
         message.setTo(user.getEmail());
         message.setSubject("Email Verification");
         message.setText("Click the link to verify your email: " +
-                frontendUrl + "/verify?token=" + verificationToken);
+                frontendUrl + "/api/auth/verify?token=" + verificationToken);
 
         mailSender.send(message);
     }
@@ -341,7 +341,7 @@ public class UserService {
         message.setTo(user.getEmail());
         message.setSubject("Password Reset Request");
         message.setText("Click the link to reset your password: " +
-                frontendUrl + "/reset-password?token=" + resetToken +
+                frontendUrl + "/api/auth/reset-password?token=" + resetToken +
                 "\n\nThis link will expire in " + RESET_TOKEN_EXPIRY_HOURS + " hours.");
 
         mailSender.send(message);
