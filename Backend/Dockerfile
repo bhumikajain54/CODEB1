@@ -26,3 +26,10 @@ EXPOSE 8080
 
 # Specify the command to run the application
 ENTRYPOINT ["java", "-jar","/app/demo-0.0.1-SNAPSHOT.jar"]
+
+#how to add below code in above code
+# Set environment variables
+ENV DATASOURCE_URL=jdbc:mysql://mysql-2ae78166-jainbhumika54-bdc3.d.aivencloud.com:21772/mis_invoicing
+ENV DATASOURCE_USER=avnadmin
+ENV DATASOURCE_PASSWORD=AVNS_FcjeIAOTBExBUWl0J0_
+ENV FRONTEND_URL=http://localhost:3000
