@@ -366,7 +366,7 @@ const UserDashboard = () => {
   const fetchGroups = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:8080/api/groups");
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/groups`);
       const activeGroups = response.data.filter(group => group.active !== false);
       setGroups(activeGroups);
       setTotalGroups(activeGroups.length);
@@ -387,7 +387,7 @@ const UserDashboard = () => {
       return;
     }
     try {
-      const response = await axios.post("http://localhost:8080/api/groups", {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/groups`, {
         groupName: newGroupName,
       });
 
@@ -413,7 +413,7 @@ const UserDashboard = () => {
       return;
     }
     try {
-      const response = await axios.put(`http://localhost:8080/api/groups/${editGroupId}`, {
+      const response = await axios.put(`${process.env.REACT_APP_API_URL}/groups/${editGroupId}`, {
         groupName: editGroupName
       });
       console.log("Update response:", response.data);
@@ -443,7 +443,7 @@ const UserDashboard = () => {
       
       const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
       
-      const response = await axios.delete(`http://localhost:8080/api/groups/${groupId}`, config);
+      const response = await axios.delete(`${process.env.REACT_APP_API_URL}/groups/${groupId}`, config);
       
       console.log("Delete response:", response.data);
       setSuccess("Group deleted successfully!");

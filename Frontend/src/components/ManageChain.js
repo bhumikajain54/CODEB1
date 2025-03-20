@@ -29,7 +29,7 @@ const ManageChain = () => {
   // Fetch All Groups for dropdown
   const fetchGroups = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/api/groups");
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/groups`);
       const activeGroups = response.data.filter(group => group.active !== false);
       setGroups(activeGroups);
       setTotalGroups(activeGroups.length);
@@ -43,7 +43,7 @@ const ManageChain = () => {
   const fetchChains = async () => {
     try {
       setLoading(true);
-      const response = await axios.get("http://localhost:8080/api/chains");
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/chains`);
       const activeChains = response.data.filter(chain => chain.active !== false);
       setChains(activeChains);
       setTotalChains(activeChains.length);
@@ -80,7 +80,7 @@ const ManageChain = () => {
     try {
       const selectedGroup = groups.find(g => g.groupId.toString() === selectedGroupId);
       
-      const response = await axios.post("http://localhost:8080/api/chains", {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/chains`, {
         companyName: newCompanyName,
         gstnNo: newGstnNo,
         group: selectedGroup
@@ -117,7 +117,7 @@ const ManageChain = () => {
     try {
       const selectedGroup = groups.find(g => g.groupId.toString() === editGroupId);
       
-      const response = await axios.put(`http://localhost:8080/api/chains/${editChainId}`, {
+      const response = await axios.put(`${process.env.REACT_APP_API_URL}/chains/${editChainId}`, {
         companyName: editCompanyName,
         gstnNo: editGstnNo,
         group: selectedGroup,
@@ -151,7 +151,7 @@ const ManageChain = () => {
       const token = localStorage.getItem("token");
       const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
       
-      const response = await axios.delete(`http://localhost:8080/api/chains/${chainId}`, config);
+      const response = await axios.delete(`${process.env.REACT_APP_API_URL}/${chainId}`, config);
       
       console.log("Delete response:", response.data);
       setSuccess("Company deleted successfully!");

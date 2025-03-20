@@ -34,7 +34,6 @@ const ManageBrands = () => {
   const [filterCompany, setFilterCompany] = useState("");
   const [filterGroup, setFilterGroup] = useState("");
 
-  const API_URL = "http://localhost:8080/api";
 
   useEffect(() => {
     fetchBrands();
@@ -46,7 +45,7 @@ const ManageBrands = () => {
   const fetchBrands = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_URL}/brands`);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/brands`);
       setBrands(response.data);
       setTotalBrands(response.data.length);
       setError(null);
@@ -61,7 +60,7 @@ const ManageBrands = () => {
   // Fetch All Chains
   const fetchChains = async () => {
     try {
-      const response = await axios.get(`${API_URL}/chains`);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/chains`);
       setChains(response.data);
     } catch (err) {
       console.error("Error fetching chains:", err);
@@ -71,7 +70,7 @@ const ManageBrands = () => {
   // Fetch All Groups
   const fetchGroups = async () => {
     try {
-      const response = await axios.get(`${API_URL}/groups`);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/groups`);
       setGroups(response.data);
     } catch (err) {
       console.error("Error fetching groups:", err);
@@ -92,7 +91,7 @@ const ManageBrands = () => {
 
     try {
       setLoading(true);
-      const response = await axios.post(`${API_URL}/brands`, {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/brands`, {
         brandName: newBrandName,
         chainId: selectedChainId
       });
@@ -129,7 +128,7 @@ const ManageBrands = () => {
     
     try {
       setLoading(true);
-      const response = await axios.put(`${API_URL}/brands/${editBrandId}?chainId=${editChainId}`, {
+      const response = await axios.put(`${process.env.REACT_APP_API_URL}/brands/${editBrandId}?chainId=${editChainId}`, {
         brandName: editBrandName
       });
       
@@ -159,7 +158,7 @@ const ManageBrands = () => {
       setLoading(true);
       
       // First check if the brand can be deleted
-      const canDeleteResponse = await axios.get(`${API_URL}/brands/can-delete/${brandId}`);
+      const canDeleteResponse = await axios.get(`${process.env.REACT_APP_API_URL}/brands/can-delete/${brandId}`);
       
       if (!canDeleteResponse.data) {
         setError("Cannot delete brand as it is associated with zones");
@@ -167,7 +166,7 @@ const ManageBrands = () => {
         return;
       }
       
-      const response = await axios.delete(`${API_URL}/brands/${brandId}`);
+      const response = await axios.delete(`${process.env.REACT_APP_API_URL}/brands/${brandId}`);
       
       setSuccess("Brand deleted successfully!");
       fetchBrands(); // Refresh list

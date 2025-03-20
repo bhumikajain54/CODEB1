@@ -64,7 +64,7 @@ const ManageZones = () => {
   const fetchZones = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${API_URL}/zones`);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/zones`);
       setZones(response.data);
       setFilteredZones(response.data);
       setTotalZones(response.data.length);
@@ -80,7 +80,7 @@ const ManageZones = () => {
   // Fetch All Brands
   const fetchBrands = async () => {
     try {
-      const response = await axios.get(`${API_URL}/brands`);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/brands`);
       setBrands(response.data);
     } catch (err) {
       console.error("Error fetching brands:", err);
@@ -100,7 +100,7 @@ const ManageZones = () => {
   // Fetch All Groups
   const fetchGroups = async () => {
     try {
-      const response = await axios.get(`${API_URL}/groups`);
+      const response = await axios.get(`${process.env.REACT_APP_API_URL}/groups`);
       setGroups(response.data);
     } catch (err) {
       console.error("Error fetching groups:", err);
@@ -161,8 +161,7 @@ const ManageZones = () => {
         zoneName: newZoneName
       };
       
-      const response = await axios.post(
-        `${API_URL}/zones?brandId=${selectedBrandId}`, 
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/zones?brandId=${selectedBrandId}`, 
         zoneData
       );
 
@@ -203,8 +202,7 @@ const ManageZones = () => {
         zoneName: editZoneName
       };
       
-      const response = await axios.put(
-        `${API_URL}/zones/${editZoneId}?brandId=${editBrandId}`, 
+      const response = await axios.put(`${process.env.REACT_APP_API_URL}/zones/${editZoneId}?brandId=${editBrandId}`, 
         zoneData
       );
       
@@ -232,7 +230,7 @@ const ManageZones = () => {
   
     try {
       setLoading(true);
-      await axios.delete(`${API_URL}/zones/${zoneId}`);
+      await axios.delete(`${process.env.REACT_APP_API_URL}/zones/${zoneId}`);
       
       setSuccess("Zone deleted successfully!");
       fetchZones();
