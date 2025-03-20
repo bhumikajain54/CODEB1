@@ -6,12 +6,15 @@ import Home from "./components/Home";
 import Login from "./components/Login";
 import Register from "./components/Register";
 import UserDashboard from "./components/UserDashboard";
+import ManageChain from "./components/ManageChain"; // Import the ManageChain component
 import AdminDashboard from "./components/AdminDashboard";
 import PrivateRoute from "./components/PrivateRoute";
 import VerifyEmail from "./components/VerifyEmail";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
 import "./App.css";
+import ManageBrands from "./components/ManageBrands";
+import ManageZones from "./components/ManageZones";
 
 function App() {
   return (
@@ -32,6 +35,13 @@ function App() {
               {/* Protected routes */}
               <Route element={<PrivateRoute allowedRoles={["USER"]} />}>
                 <Route path="/dashboard" element={<UserDashboard />} />
+                <Route path="/groups" element={<UserDashboard />} />
+                {/* <Route path="/chains" element={<UserDashboard />} /> */}
+                <Route path="/chains" element={<ManageChain />} /> {/* Use ManageChain component */}
+                <Route path="/brands" element={<ManageBrands />} />
+                <Route path="/subzones" element={<ManageZones />} />
+                <Route path="/estimates" element={<UserDashboard />} />
+                <Route path="/invoices" element={<UserDashboard />} />
               </Route>
 
               <Route element={<PrivateRoute allowedRoles={["ADMIN"]} />}>

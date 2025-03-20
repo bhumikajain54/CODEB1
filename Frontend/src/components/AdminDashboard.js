@@ -109,7 +109,7 @@ export default AdminDashboard;
 //   useEffect(() => {
 //     const fetchUsers = async () => {
 //       try {
-//         const response = await fetch(`${API_URL}/admin/users`, {
+//         const response = await fetch(`${process.env.REACT_APP_API_URL}/admin/users`, {
 //           headers: {
 //             ...authHeader(),
 //             "Content-Type": "application/json",

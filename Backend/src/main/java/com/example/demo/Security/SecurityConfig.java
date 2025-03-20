@@ -38,9 +38,25 @@
 //                .csrf(csrf -> csrf.disable())
 //                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 //                .authorizeHttpRequests(auth -> auth
-//                        .requestMatchers("/api/auth/login", "/api/auth/register", "/api/auth/verify").permitAll() // Added verify endpoint
+//                        // Public authentication endpoints
+//                        .requestMatchers("/api/auth/login",
+//                                "/api/auth/register",
+//                                "/api/auth/verify",
+//                                "/api/auth/forgot-password",
+//                                "/api/auth/validate-reset-token",
+//                                "/api/auth/reset-password",
+//                                "/api/groups").permitAll()
+//
+//                        // ✅ ALLOW ACCESS TO GROUPS API
+////                        .requestMatchers("/api/groups/**").permitAll()
+//
+//                        // Admin only endpoints
 //                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+//
+//                        // User & Admin access
 //                        .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
+//
+//                        // Any other request must be authenticated
 //                        .anyRequest().authenticated()
 //                )
 //                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -48,6 +64,7 @@
 //        return http.build();
 //    }
 //}
+
 package com.example.demo.Security;
 
 import org.springframework.context.annotation.Bean;
@@ -88,15 +105,27 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
+                        // Public authentication endpoints
                         .requestMatchers("/api/auth/login",
                                 "/api/auth/register",
                                 "/api/auth/verify",
                                 "/api/auth/forgot-password",
                                 "/api/auth/validate-reset-token",
                                 "/api/auth/reset-password").permitAll()
-                        .requestMatchers("/api/admin/").hasRole("ADMIN")
-                        .requestMatchers("/api/user/").hasAnyRole("USER", "ADMIN")
+
+                        // ALLOW ACCESS TO GROUPS API (ALL METHODS)
+                        .requestMatchers("/api/groups/**").permitAll()
+                        .requestMatchers("/api/chains/**").permitAll()
+                        .requestMatchers("/api/brands/**").permitAll()
+                        .requestMatchers("/api/zones/**").permitAll()
+
+                        // Admin only endpoints
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // User & Admin access
+                        .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
+
+                        // Any other request must be authenticated
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
