@@ -17,7 +17,7 @@ import {
   faMapMarkerAlt,
   faFilter,
   faBuilding,
-  faCopyright,
+  faTags,
   faLayerGroup
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -37,6 +37,9 @@ const ManageZones = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [totalZones, setTotalZones] = useState(0);
+  const [totalBrands, setTotalBrands] = useState(0);
+  const [totalChains, setTotalChains] = useState(0);
+  const [totalGroups, setTotalGroups] = useState(0);
   const [showAddZone, setShowAddZone] = useState(false);
   const [showEditZone, setShowEditZone] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -64,7 +67,7 @@ const ManageZones = () => {
   const fetchZones = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/zones`);
+      const response = await axios.get(`${API_URL}/zones`);
       setZones(response.data);
       setFilteredZones(response.data);
       setTotalZones(response.data.length);
@@ -80,8 +83,9 @@ const ManageZones = () => {
   // Fetch All Brands
   const fetchBrands = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/brands`);
+      const response = await axios.get(`${API_URL}/brands`);
       setBrands(response.data);
+      setTotalBrands(response.data.length);
     } catch (err) {
       console.error("Error fetching brands:", err);
     }
@@ -92,6 +96,7 @@ const ManageZones = () => {
     try {
       const response = await axios.get(`${API_URL}/chains`);
       setChains(response.data);
+      setTotalChains(response.data.length);
     } catch (err) {
       console.error("Error fetching chains:", err);
     }
@@ -100,8 +105,9 @@ const ManageZones = () => {
   // Fetch All Groups
   const fetchGroups = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/groups`);
+      const response = await axios.get(`${API_URL}/groups`);
       setGroups(response.data);
+      setTotalGroups(response.data.length);
     } catch (err) {
       console.error("Error fetching groups:", err);
     }
@@ -161,7 +167,8 @@ const ManageZones = () => {
         zoneName: newZoneName
       };
       
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/zones?brandId=${selectedBrandId}`, 
+      const response = await axios.post(
+        `${API_URL}/zones?brandId=${selectedBrandId}`, 
         zoneData
       );
 
@@ -202,7 +209,8 @@ const ManageZones = () => {
         zoneName: editZoneName
       };
       
-      const response = await axios.put(`${process.env.REACT_APP_API_URL}/zones/${editZoneId}?brandId=${editBrandId}`, 
+      const response = await axios.put(
+        `${API_URL}/zones/${editZoneId}?brandId=${editBrandId}`, 
         zoneData
       );
       
@@ -230,18 +238,39 @@ const ManageZones = () => {
   
     try {
       setLoading(true);
-      await axios.delete(`${process.env.REACT_APP_API_URL}/zones/${zoneId}`);
+      console.log("Attempting to delete zone with ID:", zoneId);
       
+      // Get token for authentication
+      const token = localStorage.getItem("token");
+      
+      if (!token) {
+        setError("Authentication token missing. Please log in again.");
+        return;
+      }
+      
+      // Include token in request headers
+      const config = { 
+        headers: { 
+          Authorization: `Bearer ${token}` 
+        } 
+      };
+      
+      const response = await axios.delete(`${API_URL}/zones/${zoneId}`, config);
+  
+      console.log("Delete response:", response.data);
       setSuccess("Zone deleted successfully!");
-      fetchZones();
-      
-      // Clear success message after 3 seconds
+      fetchZones(); // Refresh list
+  
       setTimeout(() => setSuccess(null), 3000);
     } catch (err) {
       console.error("Error deleting zone:", err);
-      setError(err.response?.data?.error || "Error deleting zone");
-      
-      // Clear error message after 5 seconds
+  
+      if (err.response && err.response.status === 403) {
+        setError("Permission denied: You don't have authorization to delete this zone.");
+      } else {
+        setError(`Error deleting zone: ${err.response?.data || err.message}`);
+      }
+  
       setTimeout(() => setError(null), 5000);
     } finally {
       setLoading(false);
@@ -294,23 +323,24 @@ const ManageZones = () => {
 
           {!showAddZone && !showEditZone && (
             <div className="dashboard-content">
-              <div className="dashboard-header">
+              {/* Stats Cards */}
+              <div className="stats-container">
                 {/* Total Groups Card */}
-                <div className="stats-card groups-card">
+                <div className="stats-card">
                   <div className="stats-card-content">
                     <div className="card-title">Total Groups</div>
-                    <div className="card-value">{groups.length}</div>
+                    <div className="card-value">{totalGroups}</div>
                   </div>
                   <div className="stats-card-icon">
-                    <FontAwesomeIcon icon={faFolderOpen} />
+                    <FontAwesomeIcon icon={faLayerGroup} />
                   </div>
                 </div>
                 
                 {/* Total Chains Card */}
-                <div className="stats-card chains-card">
+                <div className="stats-card">
                   <div className="stats-card-content">
                     <div className="card-title">Total Chains</div>
-                    <div className="card-value">{chains.length}</div>
+                    <div className="card-value">{totalChains}</div>
                   </div>
                   <div className="stats-card-icon">
                     <FontAwesomeIcon icon={faBuilding} />
@@ -318,18 +348,18 @@ const ManageZones = () => {
                 </div>
 
                 {/* Total Brands Card */}
-                <div className="stats-card brands-card">
+                <div className="stats-card">
                   <div className="stats-card-content">
                     <div className="card-title">Total Brands</div>
-                    <div className="card-value">{brands.length}</div>
+                    <div className="card-value">{totalBrands}</div>
                   </div>
                   <div className="stats-card-icon">
-                    <FontAwesomeIcon icon={faCopyright} />
+                    <FontAwesomeIcon icon={faTags} />
                   </div>
                 </div>
 
                 {/* Total Zones Card */}
-                <div className="stats-card zones-card">
+                <div className="stats-card">
                   <div className="stats-card-content">
                     <div className="card-title">Total Zones</div>
                     <div className="card-value">{totalZones}</div>
@@ -338,91 +368,89 @@ const ManageZones = () => {
                     <FontAwesomeIcon icon={faMapMarkerAlt} />
                   </div>
                 </div>
+              </div>
 
-                {/* Filter options */}
-                <div className="filter-section">
-                  <div className="filter-header">
-                    <FontAwesomeIcon icon={faFilter} className="filter-icon" />
-                    <span>Filters</span>
+              {/* Filters */}
+              <div className="filters-container">
+                <div className="filter-header">
+                  <FontAwesomeIcon icon={faFilter} className="filter-icon" />
+                  <span>Filters</span>
+                </div>
+                <div className="filter-options">
+                  <div className="filter-item">
+                    <label htmlFor="filterGroup">Group:</label>
+                    <select
+                      id="filterGroup"
+                      value={filterGroupId}
+                      onChange={(e) => setFilterGroupId(e.target.value)}
+                      className="filter-select"
+                    >
+                      <option value="">All Groups</option>
+                      {groups.map(group => (
+                        <option key={group.groupId} value={group.groupId}>{group.groupName}</option>
+                      ))}
+                    </select>
                   </div>
-                  <div className="filter-row">
-                    <div className="filter-item">
-                      <label htmlFor="groupFilter">Filter by Group:</label>
-                      <select
-                        id="groupFilter"
-                        value={filterGroupId}
-                        onChange={(e) => setFilterGroupId(e.target.value)}
-                        className="filter-select"
-                      >
-                        <option value="">All Groups</option>
-                        {groups.map(group => (
-                          <option key={group.groupId} value={group.groupId}>
-                            {group.groupName}
+                  
+                  <div className="filter-item">
+                    <label htmlFor="filterChain">Company:</label>
+                    <select
+                      id="filterChain"
+                      value={filterChainId}
+                      onChange={(e) => setFilterChainId(e.target.value)}
+                      className="filter-select"
+                    >
+                      <option value="">All Companies</option>
+                      {chains
+                        .filter(chain => !filterGroupId || (chain.group && chain.group.groupId.toString() === filterGroupId))
+                        .map(chain => (
+                          <option key={chain.chainId} value={chain.chainId}>
+                            {chain.companyName || chain.chainName}
                           </option>
                         ))}
-                      </select>
-                    </div>
-                    
-                    <div className="filter-item">
-                      <label htmlFor="chainFilter">Filter by Company:</label>
-                      <select
-                        id="chainFilter"
-                        value={filterChainId}
-                        onChange={(e) => setFilterChainId(e.target.value)}
-                        className="filter-select"
-                      >
-                        <option value="">All Companies</option>
-                        {chains
-                          .filter(chain => !filterGroupId || (chain.group && chain.group.groupId.toString() === filterGroupId))
-                          .map(chain => (
-                            <option key={chain.chainId} value={chain.chainId}>
-                              {chain.companyName || chain.chainName}
-                            </option>
-                          ))}
-                      </select>
-                    </div>
-                    
-                    <div className="filter-item">
-                      <label htmlFor="brandFilter">Filter by Brand:</label>
-                      <select
-                        id="brandFilter"
-                        value={filterBrandId}
-                        onChange={(e) => setFilterBrandId(e.target.value)}
-                        className="filter-select"
-                      >
-                        <option value="">All Brands</option>
-                        {brands
-                          .filter(brand => 
-                            (!filterChainId || (brand.chain && brand.chain.chainId.toString() === filterChainId)) &&
-                            (!filterGroupId || (brand.chain && brand.chain.group && brand.chain.group.groupId.toString() === filterGroupId))
-                          )
-                          .map(brand => (
-                            <option key={brand.brandId} value={brand.brandId}>
-                              {brand.brandName}
-                            </option>
-                          ))}
-                      </select>
-                    </div>
-                    
-                    <button className="reset-filter-btn" onClick={resetFilters}>
-                      Reset Filters
-                    </button>
+                    </select>
                   </div>
+                  
+                  <div className="filter-item">
+                    <label htmlFor="filterBrand">Brand:</label>
+                    <select
+                      id="filterBrand"
+                      value={filterBrandId}
+                      onChange={(e) => setFilterBrandId(e.target.value)}
+                      className="filter-select"
+                    >
+                      <option value="">All Brands</option>
+                      {brands
+                        .filter(brand => 
+                          (!filterChainId || (brand.chain && brand.chain.chainId.toString() === filterChainId)) &&
+                          (!filterGroupId || (brand.chain && brand.chain.group && brand.chain.group.groupId.toString() === filterGroupId))
+                        )
+                        .map(brand => (
+                          <option key={brand.brandId} value={brand.brandId}>
+                            {brand.brandName}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+                  
+                  <button className="reset-filter-btn" onClick={resetFilters}>
+                    Reset Filters
+                  </button>
                 </div>
-
-                {/* Add Zone Button */}
-                <button 
-                  className="add-zone-btn" 
-                  onClick={() => {
-                    setShowAddZone(true);
-                    clearMessages();
-                  }}
-                  disabled={loading}
-                >
-                  <FontAwesomeIcon icon={faPlusCircle} />
-                  {loading ? "Loading..." : "Add Zone"}
-                </button>
               </div>
+
+              {/* Add Zone Button */}
+              <button 
+                className="add-zone-btn" 
+                onClick={() => {
+                  setShowAddZone(true);
+                  clearMessages();
+                }}
+                disabled={loading}
+              >
+                <FontAwesomeIcon icon={faPlusCircle} />
+                {loading ? "Loading..." : "Add New Zone"}
+              </button>
 
               {/* Zones Table */}
               <div className="table-container">
@@ -430,10 +458,10 @@ const ManageZones = () => {
                   <thead>
                     <tr>
                       <th>Sr.No</th>
-                      <th>Group</th>
-                      <th>Company</th>
+                      <th>Zone Name</th>
                       <th>Brand</th>
-                      <th>Zone</th>
+                      <th>Company</th>
+                      <th>Group</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -458,23 +486,24 @@ const ManageZones = () => {
                       filteredZones.map((zone, index) => (
                         <tr key={zone.id || zone.zoneId}>
                           <td>{index + 1}</td>
-                          <td>
-                            {zone.brand && zone.brand.chain && zone.brand.chain.group
-                              ? zone.brand.chain.group.groupName
-                              : "N/A"}
-                          </td>
+                          <td>{zone.zoneName}</td>
+                          <td>{zone.brand ? zone.brand.brandName : "N/A"}</td>
                           <td>
                             {zone.brand && zone.brand.chain
                               ? (zone.brand.chain.companyName || zone.brand.chain.chainName)
                               : "N/A"}
                           </td>
-                          <td>{zone.brand ? zone.brand.brandName : "N/A"}</td>
-                          <td>{zone.zoneName}</td>
+                          <td>
+                            {zone.brand && zone.brand.chain && zone.brand.chain.group
+                              ? zone.brand.chain.group.groupName
+                              : "N/A"}
+                          </td>
                           <td className="actions-cell">
                             <button
                               className="edit-btn"
                               onClick={() => initiateEditZone(zone)}
                               disabled={loading}
+                              title="Edit Zone"
                             >
                               <FontAwesomeIcon icon={faEdit} />
                               Edit
@@ -483,6 +512,7 @@ const ManageZones = () => {
                               className="delete-btn" 
                               onClick={() => handleDeleteZone(zone.id || zone.zoneId)}
                               disabled={loading}
+                              title="Delete Zone"
                             >
                               <FontAwesomeIcon icon={faTrashAlt} />
                               Delete
@@ -502,11 +532,11 @@ const ManageZones = () => {
             <div className="zone-form">
               <h3>Add New Zone</h3>
               <div className="form-group">
-                <label htmlFor="zoneName">Enter Zone Name:</label>
+                <label htmlFor="zoneName">Zone Name:</label>
                 <input
                   id="zoneName"
                   type="text"
-                  placeholder="Enter Zone Name"
+                  placeholder="Enter zone name"
                   value={newZoneName}
                   onChange={(e) => setNewZoneName(e.target.value)}
                   className="form-input"
@@ -522,7 +552,7 @@ const ManageZones = () => {
                   className="form-select"
                   disabled={loading}
                 >
-                  <option value="">Select Brand</option>
+                  <option value="">-- Select Brand --</option>
                   {brands.map(brand => (
                     <option key={brand.brandId} value={brand.brandId}>
                       {brand.brandName} ({brand.chain ? (brand.chain.companyName || brand.chain.chainName) : "N/A"})
@@ -570,7 +600,7 @@ const ManageZones = () => {
             <div className="zone-form">
               <h3>Edit Zone</h3>
               <div className="form-group">
-                <label htmlFor="editZoneName">Enter Zone Name:</label>
+                <label htmlFor="editZoneName">Zone Name:</label>
                 <input
                   id="editZoneName"
                   type="text"
@@ -589,7 +619,7 @@ const ManageZones = () => {
                   className="form-select"
                   disabled={loading}
                 >
-                  <option value="">Select Brand</option>
+                  <option value="">-- Select Brand --</option>
                   {brands.map(brand => (
                     <option key={brand.brandId} value={brand.brandId}>
                       {brand.brandName} ({brand.chain ? (brand.chain.companyName || brand.chain.chainName) : "N/A"})

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Sidebar from "./sidebar";
 
-const UserDashboard = () => {
+const GroupManagement = () => {
   const [groups, setGroups] = useState([]);
   const [newGroupName, setNewGroupName] = useState("");
   const [editGroupId, setEditGroupId] = useState(null);
@@ -315,4 +315,4 @@ const UserDashboard = () => {
   );
 };
 
-export default UserDashboard;
+export default GroupManagement;

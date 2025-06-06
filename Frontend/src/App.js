@@ -15,7 +15,10 @@ import ResetPassword from "./components/ResetPassword";
 import "./App.css";
 import ManageBrands from "./components/ManageBrands";
 import ManageZones from "./components/ManageZones";
-
+import ManageEstimate from "./components/ManageEstimate";
+import CreateInvoice from "./components/CreateInvoice";
+import InvoiceManagement from "./components/InvoiceManagement";
+import GroupManagement from "./components/GroupManagement";
 function App() {
   return (
     <AuthProvider>
@@ -35,13 +38,13 @@ function App() {
               {/* Protected routes */}
               <Route element={<PrivateRoute allowedRoles={["USER"]} />}>
                 <Route path="/dashboard" element={<UserDashboard />} />
-                <Route path="/groups" element={<UserDashboard />} />
-                {/* <Route path="/chains" element={<UserDashboard />} /> */}
+                <Route path="/groups" element={<GroupManagement />} />
                 <Route path="/chains" element={<ManageChain />} /> {/* Use ManageChain component */}
                 <Route path="/brands" element={<ManageBrands />} />
                 <Route path="/subzones" element={<ManageZones />} />
-                <Route path="/estimates" element={<UserDashboard />} />
-                <Route path="/invoices" element={<UserDashboard />} />
+                <Route path="/estimates" element={<ManageEstimate />} />
+                <Route path="/invoices" element={<CreateInvoice />} />
+                <Route path="/invoice" element={<InvoiceManagement />} />
               </Route>
 
               <Route element={<PrivateRoute allowedRoles={["ADMIN"]} />}>

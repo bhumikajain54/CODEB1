@@ -9,7 +9,8 @@ const Sidebar = ({ activePage }) => {
     { name: "Manage Brands", path: "/brands" },
     { name: "Manage Zones", path: "/subzones" },
     { name: "Manage Estimate", path: "/estimates" },
-    { name: "Manage Invoices", path: "/invoices" }
+    // { name: "Create Invoice", path: "/create-invoice" },
+    { name: "Manage Invoices", path: "/invoice" }
   ];
 
   return (
